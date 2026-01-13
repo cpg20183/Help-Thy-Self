@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Help Thy Self</title>
+  <meta name="description" content="Help Thy Self: goals, habits, streaks, journal, affirmations, focus timer, and quotes—stored locally in your browser." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="theme-color" content="#0b1220" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">HTS</div>
+      <div class="brand-text">
+        <h1>Help Thy Self</h1>
+        <p class="subtitle">Goals • Habits • Streaks • Journal • Affirmations • Focus</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btnExport" class="btn btn-secondary" title="Export your data to a JSON file">Export</button>
+      <button id="btnImport" class="btn btn-secondary" title="Import previously exported JSON">Import</button>
+      <input id="fileImport" type="file" accept="application/json" hidden />
+      <button id="btnReset" class="btn btn-danger" title="Reset all local data">Reset</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="grid">
+      <article class="card" id="cardQuote">
+        <div class="card-header">
+          <h2>Quote of the Moment</h2>
+          <div class="card-tools">
+            <button class="icon-btn" id="btnNewQuote" title="New quote">↻</button>
+          </div>
+        </div>
+        <blockquote id="quoteText" class="quote">Loading…</blockquote>
+        <div class="quote-meta">
+          <span id="quoteAuthor" class="muted"></span>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" id="btnSaveQuote">Save to Favorites</button>
+        </div>
+      </article>
+
+      <article class="card" id="cardFocus">
+        <div class="card-header">
+          <h2>Focus Timer</h2>
+          <div class="card-tools">
+            <select id="focusPreset" class="select" aria-label="Focus presets">
+              <option value="25">25 / 5 (Pomodoro)</option>
+              <option value="45">45 / 10</option>
+              <option value="60">60 / 10</option>
+              <option value="90">90 / 15</option>
+            </select>
+          </div>
+        </div>
+        <div class="focus-wrap">
+          <div class="focus-clock" aria-live="polite">
+            <span id="focusLabel">Focus</span>
+            <span id="focusTime">25:00</span>
+          </div>
+          <div class="focus-actions">
+            <button class="btn btn-primary" id="btnFocusStart">Start</button>
+            <button class="btn btn-secondary" id="btnFocusPause" disabled>Pause</button>
+            <button class="btn btn-secondary" id="btnFocusReset">Reset</button>
+          </div>
+          <p class="muted small">Optional desktop notifications are used for session changes (if you grant permission).</p>
+        </div>
+      </article>
+
+      <article class="card" id="cardGoals">
+        <div class="card-header">
+          <h2>Goals</h2>
+          <div class="card-tools">
+            <button class="btn btn-secondary" id="btnAddGoal">Add</button>
+          </div>
+        </div>
+        <ul id="goalsList" class="list"></ul>
+      </article>
+
+      <article class="card" id="cardHabits">
+        <div class="card-header">
+          <h2>Habits (Daily)</h2>
+          <div class="card-tools">
+            <button class="btn btn-secondary" id="btnAddHabit">Add</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="pill">
+            <span class="label">Today</span>
+            <span id="todayStr" class="value"></span>
+          </div>
+          <div class="pill">
+            <span class="label">Streak</span>
+            <span id="streakStr" class="value"></span>
+          </div>
+        </div>
+        <ul id="habitsList" class="list"></ul>
+      </article>
+
+      <article class="card" id="cardAffirmations">
+        <div class="card-header">
+          <h2>Affirmations</h2>
+          <div class="card-tools">
+            <button class="btn btn-secondary" id="btnAddAffirmation">Add</button>
+          </div>
+        </div>
+        <div class="affirmation">
+          <p id="affirmationText">Loading…</p>
+          <div class="affirmation-actions">
+            <button class="btn btn-primary" id="btnNextAffirmation">Next</button>
+            <button class="btn btn-secondary" id="btnSaveAffirmation">Save</button>
+          </div>
+        </div>
+        <details class="details">
+          <summary>Favorites</summary>
+          <ul id="affirmationFavs" class="list compact"></ul>
+        </details>
+      </article>
+
+      <article class="card" id="cardJournal">
+        <div class="card-header">
+          <h2>Journal</h2>
+          <div class="card-tools">
+            <button class="btn btn-secondary" id="btnNewEntry">New entry</button>
+          </div>
+        </div>
+        <div class="journal">
+          <div class="journal-editor">
+            <label class="muted small" for="journalTitle">Title</label>
+            <input id="journalTitle" class="input" placeholder="e.g., What I want to accomplish today" />
+            <label class="muted small" for="journalBody">Entry</label>
+            <textarea id="journalBody" class="textarea" rows="8" placeholder="Write freely. This stays on your device unless you export it."></textarea>
+            <div class="journal-actions">
+              <button class="btn btn-primary" id="btnSaveEntry">Save</button>
+              <button class="btn btn-secondary" id="btnClearEntry">Clear</button>
+            </div>
+          </div>
+          <div class="journal-list">
+            <h3 class="muted small">Recent entries</h3>
+            <ul id="journalEntries" class="list compact"></ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="cardFavorites">
+        <div class="card-header">
+          <h2>Favorites</h2>
+          <div class="card-tools">
+            <button class="btn btn-secondary" id="btnClearFavs">Clear</button>
+          </div>
+        </div>
+        <details class="details" open>
+          <summary>Favorite Quotes</summary>
+          <ul id="quoteFavs" class="list compact"></ul>
+        </details>
+      </article>
+
+      <article class="card" id="cardSettings">
+        <div class="card-header">
+          <h2>Settings</h2>
+        </div>
+        <div class="settings">
+          <label class="toggle">
+            <input id="toggleNotifications" type="checkbox" />
+            <span>Enable notifications for Focus Timer</span>
+          </label>
+          <label class="toggle">
+            <input id="togglePWA" type="checkbox" checked />
+            <span>Enable offline mode (Service Worker)</span>
+          </label>
+          <details class="details">
+            <summary>Analytics (optional)</summary>
+            <p class="muted small">
+              Analytics is disabled by default. If you want privacy-friendly analytics (Plausible/Umami),
+              follow README.md to add a single script tag in this file.
+            </p>
+          </details>
+          <p class="muted small">All data is stored in your browser (localStorage). Use Export/Import for backup or moving devices.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="muted">Local-first. No account required.</span>
+    <span class="muted">Version <span id="appVersion"></span></span>
+  </footer>
+
+  <dialog id="modal" class="modal" aria-label="Modal dialog">
+    <form method="dialog" class="modal-inner">
+      <h3 id="modalTitle">Add</h3>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" value="cancel">Cancel</button>
+        <button class="btn btn-primary" id="modalConfirm" value="default">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
